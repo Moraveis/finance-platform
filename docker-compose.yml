@@ -1,0 +1,35 @@
+services:
+
+  billing:
+    image: billing-service:latest
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_APPLICATION_NAME: "billing-service"
+    networks:
+      - default
+
+#  database:
+#    image: postgres:18
+#    container_name: billing_db
+#    environment:
+#      POSTGRES_DB: billing_db
+#      POSTGRES_USER: billing_user
+#      POSTGRES_PASSWORD: secret
+#    ports:
+#      - "5432:5432"
+#    volumes:
+#      - postgres_data:/var/lib/postgresql/data
+#    healthcheck:
+#      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+#      interval: 10s
+#      timeout: 5s
+#      retries: 3
+#      start_interval: 15s
+#
+#volumes:
+#  postgres_data:
+
+networks:
+  default:
+    driver: bridge
