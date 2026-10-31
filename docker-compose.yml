@@ -6,29 +6,38 @@ services:
       - "8080:8080"
     environment:
       SPRING_APPLICATION_NAME: "billing-service"
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://database:5432/billing_db"
     networks:
       - default
+    depends_on:
+      - database
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
 
-#  database:
-#    image: postgres:18
-#    container_name: billing_db
-#    environment:
-#      POSTGRES_DB: billing_db
-#      POSTGRES_USER: billing_user
-#      POSTGRES_PASSWORD: secret
-#    ports:
-#      - "5432:5432"
-#    volumes:
-#      - postgres_data:/var/lib/postgresql/data
-#    healthcheck:
-#      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
-#      interval: 10s
-#      timeout: 5s
-#      retries: 3
-#      start_interval: 15s
-#
-#volumes:
-#  postgres_data:
+  database:
+    image: postgres:18
+    container_name: billing_db
+    environment:
+      POSTGRES_DB: billing_db
+      POSTGRES_USER: billing_user
+      POSTGRES_PASSWORD: secret
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB" ] # The command to check if the service is healthy
+      interval: 10s # How often the check runs
+      timeout: 5s # The maximum time a check can take before failing
+      retries: 3 # The number of failed attempts before marking a container as unhealthy
+      start_period: 15s # The grace period before health checks begin (useful for services with a startup delay).
+
+volumes:
+  postgres_data:
 
 networks:
   default:
